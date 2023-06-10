@@ -1,0 +1,34 @@
+---
+
+- name: Create a mountable directory if it does not exist (Data)
+  file:
+    path: /mnt/docker_registry/data
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+
+
+- name: Generate docker compose file
+  copy:
+    dest: /mnt/docker_registry/data/docker-compose.yml
+    content: |
+             version: '3'
+             services:
+               registry:
+                 image: registry:latest
+                 restart: always
+                 ports:
+                   - "5000:5000"
+                 environment:
+                   REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+                 volumes:
+                   - /mnt/docker_registry/data:/data
+
+
+- name: Run `docker-compose up`
+  community.docker.docker_compose:
+    project_src: /mnt/docker_registry/data
+    build: false
+
+...

@@ -1,0 +1,41 @@
+---
+# ---------------------------------------------------------------------------------------- #
+# Base OS setup -------------------------------------------------------------------------- #    
+- name: Install net-tools
+  apt:
+    name: net-tools
+    state: present
+    update_cache: yes
+
+
+- name: Install packages that allow apt to be used over HTTPS
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+      - unattended-upgrades
+      - gpg
+
+- name: Enable unattended upgrades (1)
+  shell: sed -i 's/\/\/\t*":-updates";/\t":-updates";/g' /etc/apt/apt.conf.d/50unattended-upgrades
+
+- name: Enable unattended upgrades (2)
+  blockinfile:
+    path: /etc/apt/apt.conf.d/20auto-upgrades
+    create: yes
+    block: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Download-Upgradeable-Packages "1";
+      APT::Periodic::AutocleanInterval "7";
+      APT::Periodic::Unattended-Upgrade "1";
+# ---------------------------------------------------------------------------------------- #
+
+...
+

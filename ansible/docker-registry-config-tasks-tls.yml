@@ -1,0 +1,220 @@
+---
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-a-private-docker-registry-on-ubuntu-22-04
+
+- name: Install needed packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - nginx
+      - apache2-utils
+      - python3-passlib
+
+
+- name: Create a mountable directory if it does not exist (Data)
+  file:
+    path: /mnt/docker_registry/data
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+
+
+- name: Create a mountable directory if it does not exist (Auth)
+  file:
+    path: /mnt/docker_registry/auth
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+
+
+- name: Create a mountable directory if it does not exist (Private)
+  file:
+    path: /mnt/docker_registry/private
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+
+
+- name: Add a user to a password file for docker registry
+  community.general.htpasswd:
+    path: /mnt/docker_registry/auth/registry.password
+    name: registry-user
+    password: oedu2eGh
+    crypt_scheme: md5_crypt
+
+
+- name: Generate docker compose file
+  copy:
+    dest: /mnt/docker_registry/data/docker-compose.yml
+    content: |
+             version: '3'
+             services:
+               registry:
+                 image: registry:latest
+                 restart: always
+                 ports:
+                   - "5000:5000"
+                 environment:
+                   REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+                   REGISTRY_AUTH: htpasswd
+                   REGISTRY_AUTH_HTPASSWD_REALM: Registry
+                   REGISTRY_AUTH_HTPASSWD_PATH: /mnt/docker_registry/auth/registry.password
+                 volumes:
+                   - /mnt/docker_registry/auth:/auth
+                   - /mnt/docker_registry/data:/data
+
+
+- name: Run `docker-compose up`
+  community.docker.docker_compose:
+    project_src: /mnt/docker_registry/data
+    build: false
+
+
+- name: Create private key (RSA, 4096 bits)
+  community.crypto.openssl_privatekey:
+    path: /mnt/docker_registry/private/docker-registry.key
+
+
+- name: Create simple self-signed certificate
+  community.crypto.x509_certificate:
+    path: /mnt/docker_registry/private/docker-registry.pem
+    privatekey_path: /mnt/docker_registry/private/docker-registry.key
+    provider: selfsigned
+
+
+- name: Generate nginx configuration
+  copy:
+    dest: /etc/nginx/nginx.conf
+    content: |
+              user www-data;
+              worker_processes auto;
+              pid /run/nginx.pid;
+              include /etc/nginx/modules-enabled/*.conf;
+
+              events {
+                worker_connections 768;
+                # multi_accept on;
+              }
+
+              http {
+
+                ##
+                # Basic Settings
+                ##
+                
+                client_max_body_size 16384m;
+
+                sendfile on;
+                tcp_nopush on;
+                types_hash_max_size 2048;
+                # server_tokens off;
+
+                # server_names_hash_bucket_size 64;
+                # server_name_in_redirect off;
+
+                include /etc/nginx/mime.types;
+                default_type application/octet-stream;
+
+                ##
+                # SSL Settings
+                ##
+                ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
+                ssl_prefer_server_ciphers on;
+
+                ##
+                # Logging Settings
+                ##
+                access_log /var/log/nginx/access.log;
+                error_log /var/log/nginx/error.log;
+
+                ##
+                # Gzip Settings
+                ##
+                gzip on;
+                # gzip_vary on;
+                # gzip_proxied any;
+                # gzip_comp_level 6;
+                # gzip_buffers 16 8k;
+                # gzip_http_version 1.1;
+                # gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+                ##
+                # Virtual Host Configs
+                ##
+                include /etc/nginx/conf.d/*.conf;
+                include /etc/nginx/sites-enabled/*;
+              }
+
+
+
+- name: Generate nginx site configuration
+  copy:
+    dest: /etc/nginx/sites-available/docker-registry.vlab
+    content: |
+              server {
+                listen              443 ssl;
+                server_name         docker-registry.vlab;
+                ssl_certificate     /mnt/docker_registry/private/docker-registry.pem;
+                ssl_certificate_key /mnt/docker_registry/private/docker-registry.key;
+                ssl_protocols       TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+                ssl_ciphers         HIGH:!aNULL:!MD5;
+
+                location / {
+                  # Do not allow connections from docker 1.5 and earlier
+                  # docker pre-1.6.0 did not properly set the user agent on ping, catch "Go *" user agents
+                  if ($http_user_agent ~ "^(docker\/1\.(3|4|5(?!\.[0-9]-dev))|Go ).*$" ) {
+                    return 404;
+                  }
+
+                  proxy_pass                          http://localhost:5000;
+                  proxy_set_header  Host              $http_host;   # required for docker client's sake
+                  proxy_set_header  X-Real-IP         $remote_addr; # pass on real client's IP
+                  proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+                  proxy_set_header  X-Forwarded-Proto $scheme;
+                  proxy_read_timeout                  900;
+                }                  
+              }
+
+
+- name: Enable nginx configuration
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/docker-registry.vlab
+    dest: /etc/nginx/sites-enabled/docker-registry.vlab
+    state: link
+    # owner: root
+    # group: root
+
+- name: Restart nginx
+  service:
+    name: nginx
+    enabled: yes
+    state: restarted
+
+
+# https://github.com/docker/machine/issues/1872
+- name: Add the self-signed cert to the docker daemon accepted certs
+  file:
+    path: "/etc/docker/certs.d/{{ ansible_eth1.ipv4.address }}:443"
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0755'
+
+- name: Add the self-signed cert to the docker daemon accepted certs
+  ansible.builtin.file:
+    src: /mnt/docker_registry/private/docker-registry.pem
+    dest: "/etc/docker/certs.d/{{ ansible_eth1.ipv4.address }}:443/ca.crt"
+    state: link
+
+- name: Restart Docker
+  service:
+    name: docker
+    enabled: yes
+    state: restarted
+
+...

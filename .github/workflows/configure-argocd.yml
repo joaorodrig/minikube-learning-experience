@@ -1,0 +1,35 @@
+name: Configure ArgoCD 
+
+on:
+  workflow_dispatch: # allows the user to manual start the workflow
+  push:
+    paths:
+      - .github/workflows/configure-argocd.yml
+      - argocd-manifests/**
+
+env:
+  ARGOCD_MANIFEST_FOLDER_PATH: argocd-manifests
+
+jobs:
+
+  configure-argo-cd:
+    runs-on: [ self-hosted, minikube ]
+    steps:
+      
+      - name: Checking out repository
+        uses: actions/checkout@v3
+
+      - name: Set kube_config
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.MINIKUBE_CONFIG }}
+
+      - name: Validate ArgoCD Manifests
+        uses: actions-hub/kubectl@master
+        with:
+          args: apply -f ${{ env.ARGOCD_MANIFEST_FOLDER_PATH }} --dry-run=server
+
+      - name: Add ArgoCD Manifests
+        uses: actions-hub/kubectl@master
+        with:
+          args: apply -f ${{ env.ARGOCD_MANIFEST_FOLDER_PATH }}

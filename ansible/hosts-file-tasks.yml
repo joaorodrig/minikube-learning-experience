@@ -1,0 +1,24 @@
+---
+- name: Install net-tools
+  apt:
+    name: net-tools
+    state: present
+    update_cache: yes
+
+
+- name: Get vagrant host ip
+  shell: netstat -rn | grep "^0.0.0.0 " | cut -d " " -f10
+  register: vagrant_host_ip
+
+
+- name: Add names to hosts file
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item }}"
+  loop:
+    - "{{ vagrant_host_ip.stdout }} vagrant-host.vlab"
+    - "{{ ansible_eth1.ipv4.address }} docker-registry.vlab"
+    - "{{ ansible_eth1.ipv4.address }} nfs-storage.vlab"
+
+...
+

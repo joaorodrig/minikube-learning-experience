@@ -1,0 +1,74 @@
+---
+
+# ---------------------------------------------------------------------------------------- #
+# Install Docker ------------------------------------------------------------------------- #
+- name: Add an apt signing key for Docker
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add apt repository for stable version
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+    filename: docker.list
+
+- name: Install docker and its dependecies
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - docker-ce
+      - docker-ce-cli
+      - docker-compose
+      - containerd.io
+      - python3-requests
+      - python3-docker
+
+- name: Configure docker
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+              {
+                "exec-opts": ["native.cgroupdriver=systemd"],
+                "log-driver": "json-file",
+                "log-opts": {
+                  "max-size": "100m"
+                },
+                "storage-driver": "overlay2",
+                "hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"],
+                "insecure-registries" : ["http://docker-registry.vlab:5000"]
+              }
+
+- name: Override systemd unit for docker to listen on tcp - create path
+  file:
+    path: /etc/systemd/system/docker.service.d/
+    state: directory
+
+- name: Override systemd unit for docker to listen on tcp
+  copy:
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/bin/dockerd
+    dest: /etc/systemd/system/docker.service.d/override.conf
+
+- name: systemctl daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Restart Docker
+  service:
+    name: docker
+    enabled: yes
+    state: restarted
+
+- name: Add vagrant user to docker group
+  user:
+    name: vagrant
+    group: docker
+# ---------------------------------------------------------------------------------------- #
+
+...

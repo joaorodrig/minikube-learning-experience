@@ -1,0 +1,60 @@
+---
+
+# ---------------------------------------------------------------------------------------- #
+# Prepare NFS service -------------------------------------------------------------------- #
+- name: install nfs packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - nfs-kernel-server
+
+
+- name: Create a mountable directory if it does not exist
+  file:
+    path: /mnt/nfs_share/
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0777'
+
+
+- name: Create a mountable directory if it does not exist
+  file:
+    path: /mnt/nfs_share/k8s-volumes
+    state: directory
+    owner: vagrant
+    group: vagrant
+    mode: '0777'
+
+
+- name: Generate exports file
+  copy:
+    content: |
+              /mnt/nfs_share   *(rw,sync,no_root_squash,no_subtree_check)
+    dest: /etc/exports
+
+
+- name: Modify permissions for exports file.
+  ansible.builtin.file:
+    path: /etc/exports
+    owner: root
+    group: root
+    mode: 0644
+
+
+- name: expostfs -a
+  shell: exportfs -a
+
+
+- name: systemd enable nfs
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+    - nfs-kernel-server.service
+
+...

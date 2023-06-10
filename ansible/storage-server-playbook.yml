@@ -1,0 +1,40 @@
+---
+
+- name: Configure Host
+  gather_facts: true
+  become: true
+  hosts: all
+  tasks:
+    
+    # ---------------------------------------------------------------------------------------- #
+    # Base OS setup -------------------------------------------------------------------------- #
+    - name: Playbook - Base OS setup
+      ansible.builtin.include_tasks:
+        file: base-os-config-tasks.yml
+
+    # ---------------------------------------------------------------------------------------- #
+    # Hosts file setup ----------------------------------------------------------------------- #
+    - name: Playbook - Hosts file
+      ansible.builtin.include_tasks:
+        file: hosts-file-tasks.yml
+    
+    # ---------------------------------------------------------------------------------------- #
+    # NFS setup ------------------------------------------------------------------------------ #
+    - name: Playbook - NFS setup
+      ansible.builtin.include_tasks:
+        file: nfs-config-tasks.yml
+
+    # ---------------------------------------------------------------------------------------- #
+    # Docker install ------------------------------------------------------------------------- #
+    - name: Playbook - Docker install
+      ansible.builtin.include_tasks:
+        file: docker-setup-tasks.yml   
+
+    # ---------------------------------------------------------------------------------------- #
+    # Docker Registry setup ------------------------------------------------------------------ #
+    - name: Playbook - Docker Registry setup
+      ansible.builtin.include_tasks:
+        file: docker-registry-config-tasks.yml   
+    
+...
+

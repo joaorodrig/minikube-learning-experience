@@ -1,0 +1,91 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: argocd-hello-world
+  namespace: argocd
+  labels:
+    name: argocd-hello-world
+    type: argocd-hello-world
+spec:
+  description: ArgoCD Hello World
+  
+  # Allow manifests to deploy from any Git repos
+  sourceRepos:
+    - '*'
+  
+  destinations:
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+      name: in-cluster
+    - namespace: default
+      server: https://kubernetes.default.svc
+      name: in-cluster
+    
+    # Application Specific Namespaces - Add as needed
+    - namespace: training
+      server: https://kubernetes.default.svc
+      name: in-cluster
+  
+
+  # Deny all cluster-scoped resources from being created, except for Namespace
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+
+  # Allow all namespaced-scoped resources to be created, except for ResourceQuota, LimitRange, NetworkPolicy
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+    - group: ''
+      kind: LimitRange
+    - group: ''
+      kind: NetworkPolicy
+
+  # # Deny all namespaced-scoped resources from being created, except for Deployment and StatefulSet
+  # namespaceResourceWhitelist:
+  #   - group: 'apps'
+  #     kind: Deployment
+  #   - group: 'apps'
+  #     kind: StatefulSet
+
+  # Enables namespace orphaned resource monitoring.
+  orphanedResources:
+    warn: false
+
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-hello-world
+  namespace: argocd
+  # annotations:
+  #   argocd.argoproj.io/refresh: hard
+  labels:
+    name: argocd-hello-world
+    type: argocd-hello-world
+spec:
+  project: argocd-hello-world
+  source:
+    repoURL: https://github.com/joaorodrig/minikube-learning-experience.git
+    targetRevision: HEAD
+    path: apps/hello-world/
+    directory:
+      recurse: true
+      include: '*.yml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    retry:
+      limit: 5 # number of failed sync attempt retries; unlimited number of attempts if less than 0
+      backoff:
+        duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
+        factor: 2 # a factor to multiply the base duration after each failed retry
+        maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
+
