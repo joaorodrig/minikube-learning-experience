@@ -3,7 +3,7 @@ My Minikube Learning Experience
 
 Welcome! This is one of my very first public GitHub repos and contains some learning I'm doing in the Kubernetes space. This is work in progress and it is intended to documen my beginner-to-intermediate learning experience into Kubernetes. I will document in this repository my learning journey towards becoming a Certified Kubernetes Application Developer (CKAD), as well as my learning adventures into the exciting Data Engineering and Analytics world (I'm a traditional Network and Linux guy, who has been doing Cloud Infrastructure and Platform Engineering for the last 5 years).
 
-This environment is built on my personal Ubuntu 22.04 machine, using Linux KVM, Minikube, Hashicorp Vagrant, GitHub Actions for CI/CD, as well as ArgoCD. I hope you enjoy this, and feel free to get in touch. Please note this is work-in-progress I do in my free time, after looking after my family and I.
+This environment is built on my personal Ubuntu 22.04 machine, using Linux KVM, Minikube, Hashicorp Vagrant, GitHub Actions for CI/CD, as well as ArgoCD. I hope you enjoy this, and feel free to get in touch. Please note this is work-in-progress which I do in my free time, after looking after my family and myself.
 
 
 .. contents:: Table of Contents
