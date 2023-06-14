@@ -15,9 +15,16 @@ Resources
 - Kubernetes Certified Application Developer (CKAD) with Tests: https://www.udemy.com/course/certified-kubernetes-application-developer/
 
 
+**Note: These notes are guided by KodeKloud's CKAD Udemy course you can find in the link above**
 
-OCI Runtime Tools
------------------
+
+
+Core Concepts
+-------------
+
+
+Container Runtime Interface (CRI) Debug Tools
+=============================================
 
 ::
 
@@ -72,3 +79,11 @@ OCI Runtime Tools
     --version, -v                       print the version (default: false)
 
 
+
+Generate skeleton configuration
+===============================
+
+::
+
+    kubectl create namespace test --dry-run=client -o yaml
+    kubectl run nginx --image nginx --dry-run=client -o yaml
