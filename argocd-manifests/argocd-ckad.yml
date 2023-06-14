@@ -76,7 +76,7 @@ spec:
       include: '*.yml'
   destination:
     server: https://kubernetes.default.svc
-    namespace: ckad
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
