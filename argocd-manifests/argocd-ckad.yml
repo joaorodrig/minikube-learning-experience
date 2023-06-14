@@ -59,7 +59,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: argocd-ckad
-  namespace: ckad
+  namespace: argocd
   # annotations:
   #   argocd.argoproj.io/refresh: hard
   labels:
