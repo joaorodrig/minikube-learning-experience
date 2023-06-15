@@ -9,7 +9,7 @@ metadata:
     type: front-end
 spec:
   containers:
-    - name: nginx-controller
+    - name: nginx-container
       image: nginx
       
 ...
