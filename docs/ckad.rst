@@ -15,7 +15,7 @@ Resources
 - Kubernetes Certified Application Developer (CKAD) with Tests: https://www.udemy.com/course/certified-kubernetes-application-developer/
 
 
-**Note: These notes are guided by KodeKloud's CKAD Udemy course you can find in the link above**
+**Note: These notes are based on KodeKloud's CKAD Udemy course you can find** `here <ttps://www.udemy.com/course/certified-kubernetes-application-developer/>`_
 
 
 
