@@ -80,12 +80,18 @@ Container Runtime Interface (CRI) Debug Tools
 
 
 
-Generate Manifest Skeleton
-==========================
+Cheatsheets
+===========
+
+**kubectl Cheat Sheet:** https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
 ::
 
+    # Create manifest skeletons
     kubectl create namespace test --dry-run=client -o yaml
     kubectl run nginx --image nginx --dry-run=client -o yaml
+
+    # Get manifest from running object
+    kubectl get pod nginx -o yaml > pod-definition.yaml
 
 
