@@ -12,6 +12,5 @@ spec:
     - name: nginx-controller
       image: nginx
       
-
 ...
 

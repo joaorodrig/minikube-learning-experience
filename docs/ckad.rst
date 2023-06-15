@@ -80,10 +80,12 @@ Container Runtime Interface (CRI) Debug Tools
 
 
 
-Generate skeleton configuration
-===============================
+Generate Manifest Skeleton
+==========================
 
 ::
 
     kubectl create namespace test --dry-run=client -o yaml
     kubectl run nginx --image nginx --dry-run=client -o yaml
+
+
