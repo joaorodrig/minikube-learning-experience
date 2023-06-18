@@ -7,7 +7,7 @@ spec: {}
 
 ---
 apiVersion: v1
-kind: ResourceQUota
+kind: ResourceQuota
 metadata:
   name: compute-quota
   namespace: ckad-prod
