@@ -13,10 +13,10 @@ metadata:
   namespace: ckad-prod
 spec:
   hard:
-    pods: "50"
-    requests.cpi: "4"
+    pods: 50
+    requests.cpu: 40
     requests.memory: 4Gi
-    limits.cpu: "80"
+    limits.cpu: 80
     limits.memory: 4Gi
 
 ...
