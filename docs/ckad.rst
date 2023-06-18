@@ -96,7 +96,7 @@ Cheatsheets
 
     # Kubectl set namespace in context
     kubectl config set-context $(kubectl config current-context) --namespace NEW_KUBECTL_DEFAULT_NAMESPACE
-    
+
     # Change output formats
     kubectl [command] [TYPE] [NAME] -o <output_format>
 
@@ -108,4 +108,6 @@ Here are some of the commonly used formats:
 - -o wideOutput in the plain-text format with any additional information.
 - -o yamlOutput a YAML formatted API object.
 
+
+**Default FQDN for Services:** service_name.namespace.svc.cluster.local
 
