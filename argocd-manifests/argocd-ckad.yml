@@ -94,3 +94,38 @@ spec:
         factor: 2 # a factor to multiply the base duration after each failed retry
         maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
 
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-ckad-dev
+  namespace: argocd-dev
+  # annotations:
+  #   argocd.argoproj.io/refresh: hard
+  labels:
+    name: argocd-ckad-dev
+    type: argocd-ckad-dev
+spec:
+  project: argocd-ckad-dev
+  source:
+    repoURL: https://github.com/joaorodrig/minikube-learning-experience.git
+    targetRevision: HEAD
+    path: apps/ckad-lab/dev/
+    directory:
+      recurse: true
+      include: '*.yml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    retry:
+      limit: -1 # number of failed sync attempt retries; unlimited number of attempts if less than 0
+      backoff:
+        duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
+        factor: 2 # a factor to multiply the base duration after each failed retry
+        maxDuration: 3m # the maximum amount of time allowed for the backoff strategy

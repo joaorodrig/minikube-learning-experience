@@ -6,7 +6,7 @@ metadata:
 spec: {}
 status: {}
 
-...
+---
 
 apiVersion: v1
 kind: Namespace
@@ -15,7 +15,7 @@ metadata:
 spec: {}
 status: {}
 
-...
+---
 
 apiVersion: v1
 kind: Namespace
