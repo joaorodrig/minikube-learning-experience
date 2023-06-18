@@ -2,10 +2,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: argocd-ckad
+  name: ckad
   namespace: argocd
   labels:
-    name: argocd-ckad
+    name: ckad
     type: argocd-ckad
 spec:
   description: ArgoCD CKAD Lab
@@ -23,9 +23,6 @@ spec:
       name: in-cluster
     
     # Application Specific Namespaces - Add as needed
-    - namespace: ckad
-      server: https://kubernetes.default.svc
-      name: in-cluster
     - namespace: ckad-dev
       server: https://kubernetes.default.svc
       name: in-cluster
@@ -59,55 +56,20 @@ spec:
     warn: false
 
 
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: argocd-ckad
-  namespace: argocd
-  # annotations:
-  #   argocd.argoproj.io/refresh: hard
-  labels:
-    name: argocd-ckad
-    type: argocd-ckad
-spec:
-  project: argocd-ckad
-  source:
-    repoURL: https://github.com/joaorodrig/minikube-learning-experience.git
-    targetRevision: HEAD
-    path: apps/ckad-lab/
-    directory:
-      recurse: true
-      include: '*.yml'
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-      allowEmpty: true
-    retry:
-      limit: -1 # number of failed sync attempt retries; unlimited number of attempts if less than 0
-      backoff:
-        duration: 5s # the amount to back off. Default unit is seconds, but could also be a duration (e.g. "2m", "1h")
-        factor: 2 # a factor to multiply the base duration after each failed retry
-        maxDuration: 3m # the maximum amount of time allowed for the backoff strategy
-
 
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd-ckad-dev
+  name: ckad-dev
   namespace: argocd
   # annotations:
   #   argocd.argoproj.io/refresh: hard
   labels:
-    name: argocd-ckad-dev
+    name: ckad-dev
     type: argocd-ckad-dev
 spec:
-  project: argocd-ckad-dev
+  project: ckad
   source:
     repoURL: https://github.com/joaorodrig/minikube-learning-experience.git
     targetRevision: HEAD
@@ -117,7 +79,7 @@ spec:
       include: '*.yml'
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: argocd-dev
   syncPolicy:
     automated:
       prune: true
@@ -135,15 +97,15 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd-ckad-prod
+  name: ckad-prod
   namespace: argocd
   # annotations:
   #   argocd.argoproj.io/refresh: hard
   labels:
-    name: argocd-ckad-prod
+    name: ckad-prod
     type: argocd-ckad-prod
 spec:
-  project: argocd-ckad-prod
+  project: ackad
   source:
     repoURL: https://github.com/joaorodrig/minikube-learning-experience.git
     targetRevision: HEAD
@@ -153,7 +115,7 @@ spec:
       include: '*.yml'
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: argocd-prod
   syncPolicy:
     automated:
       prune: true
