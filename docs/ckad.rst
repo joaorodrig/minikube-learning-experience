@@ -94,19 +94,18 @@ Cheatsheets
     # Get manifest from running object
     kubectl get pod nginx -o yaml > pod-definition.yaml
 
-
-
-Kubectl Output Format
-=====================
-
-::
-
+    # Kubectl set namespace in context
+    kubectl config set-context $(kubectl config current-context) --namespace NEW_KUBECTL_DEFAULT_NAMESPACE
+    
+    # Change output formats
     kubectl [command] [TYPE] [NAME] -o <output_format>
 
-
+    
 Here are some of the commonly used formats:
 
 - -o jsonOutput a JSON formatted API object.
 - -o namePrint only the resource name and nothing else.
 - -o wideOutput in the plain-text format with any additional information.
 - -o yamlOutput a YAML formatted API object.
+
+

@@ -5,4 +5,18 @@ metadata:
   name: ckad-prod
 spec: {}
 
+---
+apiVersion: v1
+kind: ResourceQUota
+metadata:
+  name: compute-quota
+  namespace: ckad-prod
+spec:
+  hard:
+    pods: "50"
+    requests.cpi: "4"
+    requests.memory: 4Gi
+    limits.cpu: "80"
+    limits.memory: 4Gi
+
 ...
