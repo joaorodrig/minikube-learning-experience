@@ -79,7 +79,7 @@ spec:
       include: '*.yml'
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd-dev
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
@@ -115,7 +115,7 @@ spec:
       include: '*.yml'
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd-prod
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
