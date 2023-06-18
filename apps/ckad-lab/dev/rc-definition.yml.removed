@@ -13,7 +13,6 @@ spec:
     # can be copied-pasted form the pod definition
     metadata:
       name: myapp-pod
-      namespace: ckad
       labels:
         app: myapp
         type: front-end
