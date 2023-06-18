@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: myapp-pod
-  namespace: ckad
+  namespace: ckad-dev
   labels:
     app: myapp
     type: front-end

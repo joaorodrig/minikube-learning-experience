@@ -1,19 +1,15 @@
----
-apiVersion: v1
-kind: ReplicationController
+apiVersion: apps/v1
+kind: ReplicaSet
 metadata:
-  name: myapp-rc
-  namespace: ckad
+  name: myapp-replicaset
+  namespace: ckad-dev
   labels:
     app: myapp
     type: front-end
 spec:
   template:
-    # The metadata and spec under template
-    # can be copied-pasted form the pod definition
     metadata:
       name: myapp-pod
-      namespace: ckad
       labels:
         app: myapp
         type: front-end
@@ -22,7 +18,7 @@ spec:
         - name: nginx-container
           image: nginx
   replicas: 3
-    
-          
-
-...
+  selector:
+    matchLabels:
+      app: myapp
+      type: front-end
