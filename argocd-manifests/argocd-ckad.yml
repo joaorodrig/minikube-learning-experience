@@ -26,7 +26,12 @@ spec:
     - namespace: ckad
       server: https://kubernetes.default.svc
       name: in-cluster
-  
+    - namespace: ckad-dev
+      server: https://kubernetes.default.svc
+      name: in-cluster
+    - namespace: ckad-prod
+      server: https://kubernetes.default.svc
+      name: in-cluster
 
   # Deny all cluster-scoped resources from being created, except for Namespace
   clusterResourceWhitelist:
