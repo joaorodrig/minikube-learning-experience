@@ -105,7 +105,7 @@ metadata:
     name: ckad-prod
     type: argocd-ckad-prod
 spec:
-  project: ackad
+  project: ckad
   source:
     repoURL: https://github.com/joaorodrig/minikube-learning-experience.git
     targetRevision: HEAD
