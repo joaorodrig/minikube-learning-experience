@@ -21,7 +21,7 @@ Resources
 Minikube Lab Environment
 ------------------------
 
-Description to follow... (ArgoCD, Dev and Prod Environments, etc...) `here <apps/ckad-lab/>`_
+Description to follow... (GitHub Actions, ArgoCD, Dev and Prod Environments, etc...) `here <https://github.com/joaorodrig/minikube-learning-experience/tree/main/apps/ckad-lab>`_
 
 
 
