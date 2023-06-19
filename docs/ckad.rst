@@ -18,6 +18,12 @@ Resources
 **Note:** These notes are based on KodeKloud's CKAD Udemy course you can find `here <https://www.udemy.com/course/certified-kubernetes-application-developer/>`_
 
 
+Minikube Lab Environment
+------------------------
+
+Description to follow... (ArgoCD, Dev and Prod Environments, etc...) `here <apps/ckad-lab/>`_
+
+
 
 Core Concepts
 -------------
@@ -87,9 +93,14 @@ Cheatsheets
 
 ::
 
-    # Create manifest skeletons
-    kubectl create namespace test --dry-run=client -o yaml
+    # Create manifest skeletons / imperative commands
+    kubectl create namespace test --dry-run=client -o yaml > namespace-definition.yml
     kubectl run nginx --image nginx --dry-run=client -o yaml
+    kubectl create deployment --image=nginx nginx --dry-run=client -o yaml
+    kubectl create deployment nginx --image=nginx --replicas=4 --dry-run=client -o yaml
+    kubectl expose pod redis --port=6379 --name redis-service --dry-run=client -o yaml
+    kubectl expose pod nginx --port=80 --name nginx-service --type=NodePort --dry-run=client -o yaml
+
 
     # Get manifest from running object
     kubectl get pod nginx -o yaml > pod-definition.yaml
@@ -108,6 +119,12 @@ Here are some of the commonly used formats:
 - -o wideOutput in the plain-text format with any additional information.
 - -o yamlOutput a YAML formatted API object.
 
+...
 
 **Default FQDN for Services:** service_name.namespace.svc.cluster.local
+
+
+
+Configuration
+-------------
 
