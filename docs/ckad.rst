@@ -128,3 +128,86 @@ Here are some of the commonly used formats:
 Configuration
 -------------
 
+Pod Commands and Arguments
+==========================
+
+In a Dockerfile, the ENTRYPOINT instruction speficies a 'command prefix' which needs to be completed by the CMD instruction, or CLI argument. When specifying a Kubernetes pod, the ENTRYPOINT and CMD Dockerfile instructions map to the 'command' and 'args' spec attribute, respectively.
+
+::
+
+    # Run Ubuntu pod and sleep for 10 seconds
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: mypod
+      labels:
+        type: cmd-example
+    spec:
+      containers:
+        - name: ubuntu-sleeper
+          image: ubuntu
+          command: ["sleep"]
+          args: ["10"]
+
+
+    # Passing an evironmental variables to the same pod
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: mypod
+      labels:
+        type: cmd-example
+    spec:
+      containers:
+        - name: ubuntu-sleeper
+          image: ubuntu
+          command: ["sleep"]
+          args: ["10"]
+          env:
+            - name: MYVAR1
+              value: Value of Var 1
+
+
+
+ConfigMaps and Secrets
+======================
+
+
+Creating a ConfigMap using a definition file:
+
+::
+
+    # Definion of the ConfigMap
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: app-config
+    data:
+      MYVAR1: Value of var1
+      MYVAR2: Value of var2
+
+
+
+Three ways of injecting it into a container:
+
+::
+
+    # 1. Import all the ConfigMap to the Environment
+    envFrom:
+      - configMapRef:
+          name: CONFIG_MAP_NAME
+
+    # 2. Import specific variables to the Environment
+    env:
+      - name: MYVAR2
+        valueFrom:
+          configMapRefKey:
+            name: app-config
+            key: MYVAR2
+
+    # 3. Mount the ConfigMap as a volume
+    volumes:
+      - name: app-config-volume
+        configMap:
+          name: CONFIG_MAP_NAME
+
